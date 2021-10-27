@@ -2,6 +2,7 @@ import { auth, signInWithGoogle, createUserProfileDocument } from './firebase/co
 import {useEffect, useState} from 'react';
 import { Col, Container, Row, Button } from 'react-bootstrap';
 import SignUp from './components/SignUp/SignUp';
+import SignIn from './components/SignIn/SignIn';
 
 const App = () => {
   const [currentUser,setCurrentUser] = useState(null);
@@ -43,12 +44,9 @@ const App = () => {
         </Col>
       </Row>
       <Row>
-        <Col xs={6}>
-          For sign in
-        </Col>
+        <SignIn />
         <SignUp />
       </Row>
-        
     </Container>
   );
 }
