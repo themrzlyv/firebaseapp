@@ -4,6 +4,9 @@ const mainRoutes = {
     main: '/auth',
     login: '/auth/login',
     registration: '/auth/registration'
+  },
+  Profile: {
+    main: '/profile'
   }
 }
 

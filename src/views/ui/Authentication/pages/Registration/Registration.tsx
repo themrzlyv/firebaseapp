@@ -1,28 +1,16 @@
-import React from 'react'
-import { Col, FormControl, InputGroup } from 'react-bootstrap';
-import { Button } from 'react-bootstrap';
-import { useState } from 'react';
-import { auth, createUserProfileDocument, signInWithGoogle } from '../../../../../firebase/config';
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { Col, FormControl, InputGroup, Button } from 'react-bootstrap';
+
 import { iRegistration } from '../../common/@types';
+import { logInWithGoogle, registrationUser } from '../../common/redux/actionCreators';
 
 const Registration = () => {
   const [formValue,setFormValue] = useState<iRegistration>({email: '', displayName: '', password: ''});
 
+  const dispatch = useDispatch();
 
-  const handleSend = async (): Promise<void> => {
-    const { email, displayName, password } = formValue;
-
-    try {
-      const { user } = await auth.createUserWithEmailAndPassword(email,password);
-
-      await createUserProfileDocument({userAuth: user, additionalData: displayName });
-
-      setFormValue({email: '', displayName: '', password: ''});
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-
+  const handleSend = () => dispatch(registrationUser(formValue));
 
   return (
     <Col xs={6} className="p-5 border d-flex flex-column align-items-center justify-content-center">
@@ -58,7 +46,7 @@ const Registration = () => {
       </InputGroup>
       <div className="w-100 d-flex align-items-center justify-content-end">
         <Button onClick={handleSend} variant="outline-primary">Sign Up</Button>
-        <Button onClick={signInWithGoogle} variant="outline-danger">Login with Google</Button>
+        <Button onClick={() => dispatch(logInWithGoogle())} variant="outline-danger">Login with Google</Button>
       </div>
     </Col>
   )

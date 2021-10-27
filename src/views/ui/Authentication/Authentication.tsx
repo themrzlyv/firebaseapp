@@ -20,10 +20,10 @@ const Authentication: React.FC<iProps> = (): JSX.Element => {
         render={() => (currentUser ? <Redirect to="/" /> : <Login />)}
       />
       <Route
-        exact
         path={mainRoutes.Authentication.registration}
         render={() => (currentUser ? <Redirect to="/" /> : <Registration />)}
       />
+      <Redirect to="/auth/login" />
     </Switch>
   );
 };

@@ -1,24 +1,18 @@
-import React from 'react'
-import { Col, FormControl, InputGroup } from 'react-bootstrap';
+import React, { useState } from 'react'
 import { Button } from 'react-bootstrap';
-import { useState } from 'react';
-import { auth, signInWithGoogle } from '../../../../../firebase/config';
+import { useDispatch } from 'react-redux';
+import { Col, FormControl, InputGroup } from 'react-bootstrap';
+
 import { iLogin } from '../../common/@types';
+import { logInWithEmail, logInWithGoogle } from '../../common/redux/actionCreators';
 
 const Login: React.FC = () => {
+
+  const dispatch = useDispatch();
+  
   const [formValue,setFormValue] = useState<iLogin>({email: '', password: ''});
 
-
-  const handleSend = async (): Promise<void> => {
-    const { email, password } = formValue;
-
-    try {
-      await auth.signInWithEmailAndPassword(email, password);
-      setFormValue({email: '', password: ''});
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const handleSend = () => dispatch(logInWithEmail(formValue))
 
   return (
     <Col xs={6} className="p-5 border d-flex flex-column align-items-center justify-content-center">
@@ -44,7 +38,7 @@ const Login: React.FC = () => {
       </InputGroup>
       <div className="w-100 d-flex align-items-center justify-content-end">
         <Button onClick={handleSend} variant="outline-info">Login</Button>
-        <Button onClick={signInWithGoogle} variant="outline-danger">Login with Google</Button>
+        <Button onClick={() => dispatch(logInWithGoogle())} variant="outline-danger">Login with Google</Button>
       </div>
     </Col>
   )

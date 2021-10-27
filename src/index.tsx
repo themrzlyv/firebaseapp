@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import store from './Global/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import {store,persistor} from './Global/store';
 import App from './App';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,7 +11,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 ReactDOM.render(
   <BrowserRouter>
     <Provider store={store}>
-      <App />
+      <PersistGate persistor={persistor}>
+          <App />
+        </PersistGate>
     </Provider>
   </BrowserRouter>,
   document.getElementById('root')
