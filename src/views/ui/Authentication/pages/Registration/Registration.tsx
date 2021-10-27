@@ -1,27 +1,28 @@
-/* eslint-disable import/no-anonymous-default-export */
 import React from 'react'
 import { Col, FormControl, InputGroup } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { auth, createUserProfileDocument } from '../../firebase/config';
+import { auth, createUserProfileDocument, signInWithGoogle } from '../../../../../firebase/config';
+import { iRegistration } from '../../common/@types';
 
-const SignUp = () => {
-  const [formValue,setFormValue] = useState({email: '', displayName: '', password: ''});
+const Registration = () => {
+  const [formValue,setFormValue] = useState<iRegistration>({email: '', displayName: '', password: ''});
 
 
-  const handleSend = async () => {
+  const handleSend = async (): Promise<void> => {
     const { email, displayName, password } = formValue;
 
     try {
       const { user } = await auth.createUserWithEmailAndPassword(email,password);
 
-      await createUserProfileDocument(user,{ displayName });
+      await createUserProfileDocument({userAuth: user, additionalData: displayName });
 
       setFormValue({email: '', displayName: '', password: ''});
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   }
+
 
   return (
     <Col xs={6} className="p-5 border d-flex flex-column align-items-center justify-content-center">
@@ -57,9 +58,10 @@ const SignUp = () => {
       </InputGroup>
       <div className="w-100 d-flex align-items-center justify-content-end">
         <Button onClick={handleSend} variant="outline-primary">Sign Up</Button>
+        <Button onClick={signInWithGoogle} variant="outline-danger">Login with Google</Button>
       </div>
     </Col>
   )
 }
 
-export default SignUp;
+export default Registration;

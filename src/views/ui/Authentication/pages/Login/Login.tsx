@@ -1,15 +1,15 @@
-/* eslint-disable import/no-anonymous-default-export */
 import React from 'react'
 import { Col, FormControl, InputGroup } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { auth } from '../../firebase/config';
+import { auth, signInWithGoogle } from '../../../../../firebase/config';
+import { iLogin } from '../../common/@types';
 
-const SignIn = () => {
-  const [formValue,setFormValue] = useState({email: '', password: ''});
+const Login: React.FC = () => {
+  const [formValue,setFormValue] = useState<iLogin>({email: '', password: ''});
 
 
-  const handleSend = async () => {
+  const handleSend = async (): Promise<void> => {
     const { email, password } = formValue;
 
     try {
@@ -43,10 +43,11 @@ const SignIn = () => {
         />
       </InputGroup>
       <div className="w-100 d-flex align-items-center justify-content-end">
-        <Button onClick={handleSend} variant="outline-info">Sign in</Button>
+        <Button onClick={handleSend} variant="outline-info">Login</Button>
+        <Button onClick={signInWithGoogle} variant="outline-danger">Login with Google</Button>
       </div>
     </Col>
   )
 }
 
-export default SignIn;
+export default Login;
