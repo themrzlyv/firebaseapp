@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Col, FormControl, InputGroup, Button } from 'react-bootstrap';
 
 import { iRegistration } from '../../common/@types';
-import { logInWithGoogle, registrationUser } from '../../common/redux/actionCreators';
+import { registrationUser, logInWithGoogle } from '../../common/redux/Auth.Slice';
 
 const Registration = () => {
   const [formValue,setFormValue] = useState<iRegistration>({email: '', displayName: '', password: ''});

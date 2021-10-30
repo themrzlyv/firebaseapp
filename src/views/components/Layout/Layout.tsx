@@ -4,7 +4,7 @@ import { Col, Container, Row, Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 
 import { authSelector } from '../../../services/selectors/authSelector';
-import { logInWithGoogle, logOutUser } from '../../ui/Authentication/common/redux/actionCreators';
+import { logInWithGoogle,logOutUser } from '../../ui/Authentication/common/redux/Auth.Slice';
 
 interface iProps {
 }

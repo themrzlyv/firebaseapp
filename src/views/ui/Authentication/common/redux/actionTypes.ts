@@ -1,7 +1,0 @@
-
-export const LOG_IN_WITH_GOOGLE = 'LOG_IN_WITH_GOOGLE';
-export const LOG_IN_WITH_EMAIL = 'LOG_IN_WITH_EMAIL';
-export const LOG_OUT = 'LOGOUT';
-
-export const REGISTRATION_USER = 'REGISTRATION_USER';
-export const CHECK_CURRENT_USER = 'CHECK_CURRENT_USER';

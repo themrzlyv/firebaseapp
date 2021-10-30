@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { Col, FormControl, InputGroup } from 'react-bootstrap';
 
 import { iLogin } from '../../common/@types';
-import { logInWithEmail, logInWithGoogle } from '../../common/redux/actionCreators';
+import { checkCurrentUser, logInWithEmail, logInWithGoogle } from '../../common/redux/Auth.Slice';
 
 const Login: React.FC = () => {
 
@@ -12,7 +12,9 @@ const Login: React.FC = () => {
   
   const [formValue,setFormValue] = useState<iLogin>({email: '', password: ''});
 
-  const handleSend = () => dispatch(logInWithEmail(formValue))
+  const handleSend = () => {
+    dispatch(logInWithEmail(formValue))
+  }
 
   return (
     <Col xs={6} className="p-5 border d-flex flex-column align-items-center justify-content-center">
