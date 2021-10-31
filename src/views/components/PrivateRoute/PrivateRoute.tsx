@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { authSelector } from '../../../services/selectors/authSelector';
-import { checkCurrentUser } from '../../ui/Authentication/common/redux/Auth.Slice';
-import { useAuth } from '../../../services/context/Authentication';
 
 export interface iPrivateRoute {
   exact?: boolean;

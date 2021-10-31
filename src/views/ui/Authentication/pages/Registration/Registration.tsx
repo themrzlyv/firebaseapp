@@ -6,7 +6,7 @@ import { iRegistration } from '../../common/@types';
 import { registrationUser, logInWithGoogle } from '../../common/redux/Auth.Slice';
 
 const Registration = () => {
-  const [formValue,setFormValue] = useState<iRegistration>({email: '', displayName: '', password: ''});
+  const [formValue,setFormValue] = useState<iRegistration>({email: '', name: '', password: ''});
 
   const dispatch = useDispatch();
 
@@ -30,8 +30,8 @@ const Registration = () => {
           placeholder="Username"
           aria-label="Username"
           aria-describedby="basic-addon1"
-          value={formValue.displayName}
-          onChange={(e) => setFormValue((prevState) => ({ ...prevState, displayName: e.target.value}))}
+          value={formValue.name}
+          onChange={(e) => setFormValue((prevState) => ({ ...prevState, name: e.target.value}))}
         />
       </InputGroup>
       <InputGroup className="mb-3">

@@ -3,7 +3,10 @@ import {
   createSlice, 
   PayloadAction
 } from "@reduxjs/toolkit";
+import bcrypt from 'bcryptjs';
 import { auth, firestore } from "../../../../../firebase/config";
+import { checkToken, createUser } from "../../../../../services/data/Api.requests";
+import GenerateJwt from "../../../../../services/data/GenerateJwt";
 import Storage from "../../../../../services/data/Storage";
 import { iLogin, iRegistration, iStateReducer } from "../@types";
 import firebase from './../../../../../firebase/config';
@@ -14,125 +17,100 @@ const initialState: iStateReducer = {
   error: null
 }
 
-export const getCurrentUser = (): Promise<firebase.User | null> => {
-  return new Promise((resolve, reject) => {
-      const unsubscribe = auth.onAuthStateChanged(userAuth => {
-          unsubscribe();
-          resolve(userAuth);
-      }, reject)
-  });
-}
-
 export const checkCurrentUser = createAsyncThunk('Auth/checkCurrentUser', async(_,{rejectWithValue}) => {
-  const { refToken } = Storage.getRefreshToken();
-  const { accessToken } = Storage.getAccessToken();
-
-  const user = await getCurrentUser();
-
-  if(user){
-    const { refreshToken } = user;
-    const userAccessToken = await user.getIdToken();
-
-    if(refToken){
-      if(refToken !== refreshToken){
-        Storage.clearRefreshToken();
-        return rejectWithValue("invalid token")
-      }
+  const userId = await checkToken();
+  if(userId){
+    try {
+      const data = await firestore.collection("users").where("id","==",userId).get();
+      if(data.docs.length > 1) return rejectWithValue("Invalid token!");
+      const user = createUser(data.docs[0]);
+      return user;
+    } catch (error) {
+      return rejectWithValue(error);
     }
-
-    if(accessToken){
-      if(accessToken !== userAccessToken){
-        Storage.clearAccessToken();
-        return rejectWithValue("invalid token")
-      }
-      Storage.setRefreshToken(refreshToken);
-      Storage.clearAccessToken();
-    }
-    return {id: user?.uid, email: user?.email, displayName: user?.displayName}
   }
 })
 
-export const registrationUser = createAsyncThunk('Auth/registration', async ({ email, displayName, password}: iRegistration, {rejectWithValue}) => {
-  const snap = await firestore.collection("users").where("email","==",email).get();
-  if(snap.docs.length) {
-    return rejectWithValue("This email is already registered!");
-  } 
+export const registrationUser = createAsyncThunk('Auth/registration', async ({ email, name, password}: iRegistration, {rejectWithValue}) => {
+  try {
+    const snap = await firestore.collection("users").where("email","==",email).get();
+    if(snap.docs.length) {
+      return rejectWithValue("This email is already registered!");
+    } 
 
-  const { user } = await auth.createUserWithEmailAndPassword(email,password);
-  const createdAt = new Date();
-  if(user){
-    const userRef = firestore.doc(`users/${user?.uid}`)
-    await userRef.set({email,displayName,createdAt})
-    const accessToken = await user.getIdToken();
-    Storage.setAccessToken(accessToken);
-    const result = (await userRef.get()).data()
-    return result
-  }
+    if(!email || !name || !password) return rejectWithValue("Please fill all inputs!");
+
+    const hashedPassword = await bcrypt.hash(password,12);
+    const createdAt = new Date();
+
+    const data = await firestore.collection("users").add({email,name,password: hashedPassword, createdAt});
+    await firestore.doc(`users/${data.id}`).update({id: data.id});
+    const userDb = await data.get();
+    const user = createUser(userDb);
+
+    const { token } = GenerateJwt.accessToken({id: data.id})
+    Storage.setAccessToken(token);
+    return user;
+  } catch (error) {
+    return rejectWithValue(error)
+  }  
 });
 
 export const logInWithGoogle = createAsyncThunk('Auth/logInWithGoogle', async (_,{rejectWithValue}) => {
-  
-  const provider = new firebase.auth.GoogleAuthProvider();
-
-  provider.setCustomParameters({ prompt: "select_account"});
   try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account"});
     const { user } = await auth.signInWithPopup(provider);
     const createdAt = new Date();
     if(user){
       const userRef = firestore.doc(`users/${user?.uid}`);
       const snap = await userRef.get();
-      snap.exists === false && await userRef.set({email: user.email,displayName: user.displayName,createdAt});
-      const accessToken = await user.getIdToken();
-      Storage.setAccessToken(accessToken);
+      snap.exists === false && await userRef.set({id: user.uid, email: user.email,name: user.displayName,createdAt});
+      const { token } = GenerateJwt.accessToken({id: user.uid})
+      Storage.setAccessToken(token);
       const result = (await userRef.get()).data()
       return result;
     }
   } catch (error) {
     return rejectWithValue(error)
   }
-  
 });
+
 
 
 export const logInWithEmail = createAsyncThunk('Auth/logInWithEmail', async ({ email, password}: iLogin, {rejectWithValue}) => {
-  
   try {
-    const { user } = await auth.signInWithEmailAndPassword(email, password);
-    if(user){
-      const userRef = firestore.doc(`users/${user.uid}`);
-      const snap = await userRef.get();
+    if(!email || !password) return rejectWithValue("Please fill all inputs");
 
-      if(snap.exists) {
-        const accessToken = await user.getIdToken();
-        Storage.setAccessToken(accessToken);
-        return snap.data();
-      } else {
-        Storage.clearAccessToken();
-        await auth.currentUser?.delete()
-      }
-    }
+    const snap = await firestore.collection("users").where("email","==",email).get();
+    const userDb = snap.docs.find(el => el.data().email === email);
+    if(!userDb) return rejectWithValue("Invalid email!");
+
+    const isMatch:boolean = await bcrypt.compare(password,userDb.data().password);
+    if(!isMatch) return rejectWithValue("Invalid password!");
+
+    const user = createUser(userDb);
+
+    const { token } = GenerateJwt.accessToken({id: user.id});
+    Storage.setAccessToken(token);
+    return user
   } catch (error) {
     return rejectWithValue(error);
   }
   
 });
-
-export const logOutUser = createAsyncThunk('Auth/logOutUser', async(_,{rejectWithValue}) => {
-  try {
-    Storage.clearAccessToken();
-    Storage.clearRefreshToken();
-    await auth.signOut()
-    return null
-  } catch (error) {
-    return rejectWithValue(error);
-  }
-})
 
 
 const AuthSlice = createSlice({
   name: 'Auth',
   initialState,
-  reducers: {},
+  reducers: {
+    logOutUser: (state) => {
+      state.currentUser = null;
+      state.isLoading = false;
+      state.error = null;
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(checkCurrentUser.pending, (state, { payload }) => {
       state.isLoading = true
@@ -193,26 +171,11 @@ const AuthSlice = createSlice({
       state.isLoading = false;
       state.currentUser = null;
     })
-
-    builder.addCase(logOutUser.pending, (state, { payload }) => {
-      state.isLoading = true
-      state.error = null
-    })
-    builder.addCase(logOutUser.fulfilled, (state, action:PayloadAction<any>) => {
-      state.currentUser = action.payload;
-      state.isLoading = false;
-      state.error = null;
-    })
-    builder.addCase(logOutUser.rejected, (state, { payload }) => {
-      state.error = payload;
-      state.isLoading = false;
-      state.currentUser = null;
-    })
   }
 });
 
 
-// export const { logOut } = AuthSlice.actions;
+export const { logOutUser } = AuthSlice.actions;
 
 
 export default AuthSlice.reducer;

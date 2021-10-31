@@ -5,7 +5,6 @@ import Authentication from './views/ui/Authentication';
 import mainRoutes from './views/ui/routes';
 import PrivateRoute from './views/components/PrivateRoute/PrivateRoute';
 import Profile from './views/ui/Profile';
-import Storage from './services/data/Storage';
 
 const App: React.FC = () => {
   return (

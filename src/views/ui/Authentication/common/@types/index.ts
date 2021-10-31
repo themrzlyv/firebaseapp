@@ -5,7 +5,7 @@ export interface iLogin {
 }
 
 export interface iRegistration extends iLogin {
-  displayName: string;
+  name: string;
 }
 
 export interface iStateReducer {
