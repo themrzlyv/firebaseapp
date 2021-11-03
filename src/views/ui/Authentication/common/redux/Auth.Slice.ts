@@ -106,6 +106,8 @@ const AuthSlice = createSlice({
   initialState,
   reducers: {
     logOutUser: (state) => {
+      Storage.clearAccessToken();
+      Storage.clearRefreshToken();
       state.currentUser = null;
       state.isLoading = false;
       state.error = null;

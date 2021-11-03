@@ -6,9 +6,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './Global/store';
 import App from './App';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Authentication, AuthProvider } from './services/context/Authentication';
 import { checkCurrentUser } from './views/ui/Authentication/common/redux/Auth.Slice';
+import { ThemeProvider } from '@mui/material';
+import { theme } from './Theme/theme';
 
 const { isAuthorized } = Authentication();
 
@@ -16,12 +17,16 @@ if (isAuthorized()) {
   store.dispatch(checkCurrentUser());
 }
 
+
+
 ReactDOM.render(
   <AuthProvider>
     <BrowserRouter>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <App />
+          <ThemeProvider theme={theme}>
+            <App />
+          </ThemeProvider>
         </PersistGate>
       </Provider>
     </BrowserRouter>
