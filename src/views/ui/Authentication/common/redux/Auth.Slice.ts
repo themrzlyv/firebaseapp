@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import bcrypt from 'bcryptjs';
 import { auth, firestore } from "../../../../../firebase/config";
-import { checkToken, createUser } from "../../../../../services/data/Api.requests";
+import { checkToken, createUser } from "../../../../../services/api/Api.requests";
 import GenerateJwt from "../../../../../services/data/GenerateJwt";
 import Storage from "../../../../../services/data/Storage";
 import { iLogin, iRegistration, iStateReducer } from "../@types";
@@ -31,19 +31,19 @@ export const checkCurrentUser = createAsyncThunk('Auth/checkCurrentUser', async(
   }
 })
 
-export const registrationUser = createAsyncThunk('Auth/registration', async ({ email, name, password}: iRegistration, {rejectWithValue}) => {
+export const registrationUser = createAsyncThunk('Auth/registration', async ({ email, fullname, password, birthday, country, education, interests, comments, job, photo, verified, isAdmin, likedPosts }: iRegistration, {rejectWithValue}) => {
   try {
     const snap = await firestore.collection("users").where("email","==",email).get();
     if(snap.docs.length) {
       return rejectWithValue("This email is already registered!");
     } 
 
-    if(!email || !name || !password) return rejectWithValue("Please fill all inputs!");
+    if(!email || !fullname || !password) return rejectWithValue("Please fill all inputs!");
 
     const hashedPassword = await bcrypt.hash(password,12);
     const createdAt = new Date();
 
-    const data = await firestore.collection("users").add({email,name,password: hashedPassword, createdAt});
+    const data = await firestore.collection("users").add({email,fullname,password: hashedPassword, isAdmin, likedPosts, createdAt});
     await firestore.doc(`users/${data.id}`).update({id: data.id});
     const userDb = await data.get();
     const user = createUser(userDb);

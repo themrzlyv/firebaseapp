@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  Container,
-  Grid,
-} from '@mui/material';
+import { Container, Grid } from '@mui/material';
 
 import Header from './blocks/Header';
 

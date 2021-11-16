@@ -5,7 +5,17 @@ export interface iLogin {
 }
 
 export interface iRegistration extends iLogin {
-  name: string;
+  fullname: string;
+  photo: string;
+  birthday: string;
+  country: string;
+  education: string;
+  job: string;
+  interests: any[];
+  verified: boolean;
+  isAdmin: boolean;
+  likedPosts: any[];
+  comments: any[];
 }
 
 export interface iStateReducer {

@@ -6,3 +6,8 @@ export const authSelector = createSelector(
   getAppTools,
   ({auth}) => auth
 );
+
+export const postsSelector = createSelector(
+  getAppTools,
+  ({ posts }) => posts
+);

@@ -22,7 +22,19 @@
     "useUnknownInCatchVariables": false,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "paths": {
+      "@src/*": ["./src/*"],
+      "@src-components/*": ["./src/components/*"],
+      "@theme/*": ["./src/Theme/*"],
+      "@services/*": ["./src/services/*"],
+      "@cs-firebase/*": ["./src/services/firebase/*"],
+      "@selectors/*": ["./src/services/selectors/*"],
+      "@hooks/*": ["./src/services/hooks/*"],
+      "@views/*": ["./src/views/*"],
+      "@components/*": ["./src/views/components/*"],
+      "@ui/*": ["./src/views/ui/*"],
+    }
   },
   "include": [
     "src"

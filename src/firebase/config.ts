@@ -1,5 +1,6 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import 'firebase/compat/storage'
 import 'firebase/compat/auth';
 
 
@@ -17,4 +18,5 @@ firebase.initializeApp(config);
 
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
+export const fireStorage = firebase.storage();
 export default firebase;

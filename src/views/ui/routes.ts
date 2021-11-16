@@ -7,6 +7,13 @@ const mainRoutes = {
   },
   Profile: {
     main: '/profile'
+  },
+  Admin: {
+    main: '/admin'
+  },
+  Post: {
+    main: '/posts',
+    createPost: '/post/create'
   }
 }
 

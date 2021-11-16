@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -11,26 +11,38 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-
-import { iLogin } from '../../common/@types';
-import { logInWithEmail, logInWithGoogle } from '../../common/redux/Auth.Slice';
 import { Box } from '@mui/system';
 import { NavLink } from 'react-router-dom';
 
+import {
+  logInWithEmail,
+  logInWithGoogle,
+} from '@src/views/ui/Authentication/common/redux/Auth.Slice';
+import { authSelector } from '@src/services/selectors/authSelector';
+
+import { iLogin } from '@src/views/ui/Authentication/common/@types';
+
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { authSelector } from '../../../../../services/selectors/authSelector';
+import { toast } from 'react-toastify';
+import { toastError } from '@src/services/data/Notifies';
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
 
-  const { currentUser, isLoading } = useSelector(authSelector);
+  const { isLoading, error } = useSelector(authSelector);
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const [formValue, setFormValue] = useState<iLogin>({ email: '', password: '' });
 
   const handleSend = () => dispatch(logInWithEmail(formValue));
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`${error}`, { toastId: toastError.LOGIN_ERROR });
+    }
+  }, [error]);
 
   return (
     <Grid maxWidth="sm" marginX="auto" marginTop={5} paddingX={3}>

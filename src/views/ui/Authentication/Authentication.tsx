@@ -1,11 +1,12 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import mainRoutes from '../routes';
-
-import Login from './pages/Login';
-import Registration from './pages/Registration';
 import { useSelector } from 'react-redux';
-import { authSelector } from '../../../services/selectors/authSelector';
+
+import mainRoutes from '@src/views/ui/routes';
+import { authSelector } from '@src/services/selectors/authSelector';
+
+import Login from './pages/Login/Login';
+import Registration from './pages/Registration/Registration';
 
 interface iProps {}
 

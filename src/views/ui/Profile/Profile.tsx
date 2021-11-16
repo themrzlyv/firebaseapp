@@ -1,15 +1,17 @@
 import React from 'react';
+import { Grid } from '@mui/material';
+import Body from '@src/views/ui/Profile/partials/Body';
+import Header from '@src/views/ui/Profile/partials/Header';
 
-interface iProps {
-}
+interface iProps {}
 
-const Profile:React.FC<iProps> = (): JSX.Element => {
-    console.log('profile')
-    return (
-        <div>
-            <h2>profile</h2>
-        </div>
-    );
-}
+const Profile: React.FC<iProps> = (): JSX.Element => {
+  return (
+    <Grid container>
+      <Header />
+      <Body />
+    </Grid>
+  );
+};
 
 export default Profile;
